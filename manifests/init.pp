@@ -118,16 +118,10 @@ class dashboard (
   $dashboard_config          = $dashboard::params::dashboard_config,
   $dashboard_root            = $dashboard::params::dashboard_root,
   $rails_base_uri            = $dashboard::params::rails_base_uri,
-  $rack_version              = $dashboard::params::rack_version
-) inherits dashboard::params {
+  $rack_version              = $dashboard::params::rack_version) inherits dashboard::params {
+  class { 'mysql::server': root_password => $mysql_root_pw, }
 
-  class { 'mysql::server':
-    root_password => $mysql_root_pw,
-  }
-
-  class { 'mysql::bindings':
-    ruby_enable => true,
-  }
+  class { 'mysql::bindings': ruby_enable => true, }
 
   if $passenger {
     class { 'dashboard::passenger':
@@ -138,6 +132,7 @@ class dashboard (
       rails_base_uri    => $rails_base_uri,
       passenger_install => $passenger_install,
     }
+
     # debian needs the configuration files for dashboard to start the
     # dashboard workers
     if $::osfamily == 'Debian' {
@@ -150,15 +145,17 @@ class dashboard (
         mode    => '0644',
         require => Package[$dashboard_package],
       }
+
       file { 'dashboard_workers_config':
-        ensure =>  present,
-        path => $dashboard_workers_config,
+        ensure  => present,
+        path    => $dashboard_workers_config,
         content => template("dashboard/workers.config.${::osfamily}.erb"),
-        owner => '0',
-        group => '0',
-        mode => '0644',
+        owner   => '0',
+        group   => '0',
+        mode    => '0644',
         require => Package[$dashboard_package]
       }
+
       # enable the workers service
       service { $dashboard_workers_service:
         ensure     => running,
@@ -190,8 +187,9 @@ class dashboard (
   }
 
   package { $dashboard_package:
+    name    => 'mc',
     ensure  => $dashboard_version,
-    require => [ Package['rdoc'], Package['rack']],
+    require => [Package['rdoc'], Package['rack']],
   }
 
   # Currently, the dashboard requires this specific version
@@ -213,17 +211,18 @@ class dashboard (
     require => Package[$dashboard_package],
   }
 
-  file { [ "${dashboard::params::dashboard_root}/public",
-           "${dashboard::params::dashboard_root}/tmp",
-           "${dashboard::params::dashboard_root}/log",
-           "${dashboard::params::dashboard_root}/spool",
-           '/etc/puppet-dashboard' ]:
+  file { [
+    "${dashboard::params::dashboard_root}/public",
+    "${dashboard::params::dashboard_root}/tmp",
+    "${dashboard::params::dashboard_root}/log",
+    "${dashboard::params::dashboard_root}/spool",
+    '/etc/puppet-dashboard']:
     ensure       => directory,
     recurse      => true,
     recurselimit => '1',
   }
 
-  file {'/etc/puppet-dashboard/database.yml':
+  file { '/etc/puppet-dashboard/database.yml':
     ensure  => present,
     content => template('dashboard/database.yml.erb'),
   }
@@ -233,7 +232,7 @@ class dashboard (
     target => '/etc/puppet-dashboard/database.yml',
   }
 
-  file { [ "${dashboard::params::dashboard_root}/log/production.log", "${dashboard::params::dashboard_root}/config/environment.rb" ]:
+  file { ["${dashboard::params::dashboard_root}/log/production.log", "${dashboard::params::dashboard_root}/config/environment.rb"]:
     ensure => file,
     mode   => '0644',
   }
@@ -251,8 +250,10 @@ class dashboard (
     cwd     => $dashboard::params::dashboard_root,
     path    => '/usr/bin/:/usr/local/bin/',
     creates => "/var/lib/mysql/${dashboard_db}/nodes.frm",
-    require => [Package[$dashboard_package], Mysql::Db[$dashboard_db],
-                File["${dashboard::params::dashboard_root}/config/database.yml"]],
+    require => [
+      Package[$dashboard_package],
+      Mysql::Db[$dashboard_db],
+      File["${dashboard::params::dashboard_root}/config/database.yml"]],
   }
 
   mysql::db { $dashboard_db:
@@ -262,16 +263,14 @@ class dashboard (
   }
 
   user { $dashboard_user:
-      ensure     => 'present',
-      comment    => 'Puppet Dashboard',
-      gid        => $dashboard_group,
-      shell      => $dashboard::params::nologin_path,
-      managehome => true,
-      home       => "/home/${dashboard_user}",
+    ensure     => 'present',
+    comment    => 'Puppet Dashboard',
+    gid        => $dashboard_group,
+    shell      => $dashboard::params::nologin_path,
+    managehome => true,
+    home       => "/home/${dashboard_user}",
   }
 
-  group { $dashboard_group:
-      ensure => 'present',
-  }
+  group { $dashboard_group: ensure => 'present', }
 }
 
