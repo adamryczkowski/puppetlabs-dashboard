@@ -265,7 +265,7 @@ class dashboard (
       ensure     => 'present',
       comment    => 'Puppet Dashboard',
       gid        => $dashboard_group,
-      shell      => ${dashboard::params::nologin_path},
+      shell      => $dashboard::params::nologin_path,
       managehome => true,
       home       => "/home/${dashboard_user}",
   }
