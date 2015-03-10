@@ -33,6 +33,7 @@ class dashboard::params {
       $dashboard_service      = ['puppet-dashboard','puppet-dashboard-workers']
       $dashboard_package      = 'puppet-dashboard'
       $dashboard_root         = '/usr/share/puppet-dashboard'
+      $nologin_path              = '/sbin/nologin'
     }
 
     'Debian': {
@@ -46,6 +47,7 @@ class dashboard::params {
       $dashboard_workers_start   = 'yes'
       $mysql_package_provider    = 'aptitude'
       $ruby_mysql_package        = 'libmysql-ruby1.8'
+      $nologin_path              = '/usr/sbin/nologin'
     }
 
     default: {
