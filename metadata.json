@@ -1,0 +1,27 @@
+{
+  "author": "puppetlabs",
+  "dependencies": [
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": "\u003e\u003d 2.0.0"
+    },
+    {
+      "name": "puppetlabs/apache",
+      "version_requirement": "\u003e\u003d 0.7.0"
+    },
+    {
+      "name": "puppetlabs/passenger",
+      "version_requirement": "\u003e\u003d 0.0.2"
+    }
+  ],
+  "description": "Module to configure the Puppet Dashboard that also includes a Puppet Face that can be use to interact with the Dashboard from the CLI",
+  "license": "Apache 2.0",
+  "name": "puppetlabs-dashboard",
+  "operatingsystem_support": [],
+  "project_page": "https://github.com/puppetlabs/puppetlabs-dashboard",
+  "requirements": [],
+  "source": "git://github.com/puppetlabs/puppetlabs-dashboard.git",
+  "summary": "Installs and manages the Puppet Dashboard",
+  "tags": [],
+  "version": "0.0.4"
+}
